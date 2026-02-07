@@ -133,9 +133,9 @@ flowchart TB
         T4["data_quality_log"]
   end
  subgraph Subnet["Public Subnet: 172.31.0.0/20<br/>AZ: us-east-1a"]
-        EC2["EC2 Instance<br>Type: t3.micro<br>OS: Amazon Linux 2023<br>PostgreSQL 17"]
+        EC2["EC2 Instance<br/>Type: t3.micro<br/>OS: Amazon Linux 2023<br/>PostgreSQL 17"]
         DB
-        SG["Security Group<br>Inbound:<br>• 5432 from 0.0.0.0/0<br>• 22 from 0.0.0.0/0"]
+        SG["Security Group<br/>Inbound:<br/>• 5432 from 0.0.0.0/0<br/>• 22 from 0.0.0.0/0"]
   end
  subgraph VPC["VPC: 172.31.0.0/16"]
     direction TB
@@ -148,14 +148,14 @@ flowchart TB
   end
  subgraph AWS["AWS Cloud Region: us-east-1"]
     direction TB
-        EB["EventBridge<br/>cron: 0 13 * * ? *<br>Every day 8am EST"]
-        L1["Lambda: Extract<br/>Python 3.14 | 128MB"]
+        EB["EventBridge<br/>cron: 0 13 * * ? *<br/>Every day 8am EST"]
+        L1["Lambda: Extract<br/>Python 3.11 | 128MB"]
         S3
-        L2["Lambda: Transform & Load<br/>Python 3.12 | 256MB<br/>Retry: 3x exponential backoff"]
+        L2["Lambda: Transform & Load<br/>Python 3.11 | 256MB<br/>Retry: 3x exponential backoff"]
         VPC
   end
- subgraph Local["Local Environment"]
-        Docker["Docker Container<br>Apache Superset"]
+ subgraph Visualization["Visualization Layer"]
+        Superset["Apache Superset<br/>Public Dashboard"]
   end
     API <-- HTTP GET --> L1
     EB -- Trigger --> L1
@@ -166,7 +166,7 @@ flowchart TB
     L2 -.->|Malformed| S3Malformed
     EC2 --> T1 & T2 & T3 & T4
     EC2 -- Protected by --- SG
-    Docker -- Query --> EC2
+    Superset -- Query --> EC2
 
      API:::external
      T1:::database
@@ -181,7 +181,7 @@ flowchart TB
      S3Buffered:::buffer
      S3Malformed:::error
      L2:::compute
-     Docker:::external
+     Superset:::visualization
     classDef orchestration fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:#fff
     classDef compute fill:#ED7100,stroke:#232F3E,stroke-width:2px,color:#fff
     classDef storage fill:#3F8624,stroke:#232F3E,stroke-width:2px,color:#fff
@@ -190,6 +190,7 @@ flowchart TB
     classDef database fill:#2E73B8,stroke:#232F3E,stroke-width:2px,color:#fff
     classDef external fill:#0066CC,stroke:#232F3E,stroke-width:2px,color:#fff
     classDef security fill:#DD344C,stroke:#232F3E,stroke-width:2px,color:#fff
+    classDef visualization fill:#9B59B6,stroke:#232F3E,stroke-width:2px,color:#fff
 ```
 ### Component Diagram
 ```mermaid
@@ -230,10 +231,11 @@ flowchart TD
     
     ReadS3 -->|Success| Transform{Transform Data}
     ReadS3 -->|File Not Found| LogS3Error[Log Error]
+    ReadS3 -->|Invalid JSON| BufferMalformed[Save to<br/>clean/malformed/]
     
     Transform -->|Success| DBWrite{Write to DB}
-    Transform -->|Malformed| BufferMalformed
-    Transform -->|DB Error| BufferMalformed
+    Transform -->|Missing Fields| BufferMalformed
+    Transform -->|Transform Error| BufferMalformed
     
     DBWrite -->|Success| QualityLog[Insert to<br/>data_quality_log]
     DBWrite -->|Connection Failed| Retry1{Retry 1/3<br/>Wait 2s}
@@ -934,6 +936,7 @@ docker compose -f docker-compose-non-dev.yml up -d
 ---
 ## Cost Analysis
 ---
+
 
 
 

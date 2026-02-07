@@ -6,10 +6,10 @@
 * [Purpose](#purpose)
 * [Features](#features)
 * [Project Metrics](#project-metrics)
-* [Technology Stack & Rationale](#technology-stack)
+* [Technology Stack & Rationale](#technology-stack-&-rational)
 * [Complete List of Tools & Services](#tools)
-* [Technical Diagrams](#diagrams)
-   * [Sequence Diagram](#sequence)
+* [Technical Diagrams](#technical-diagrams)
+   * [Sequence Diagram](#sequence-diagram)
    * [AWS Architecture Diagram](#architecture)
    * [Component Diagram](#component)
    * [Exception Flow Diagram](#exception)
@@ -1026,6 +1026,7 @@ docker compose -f docker-compose-non-dev.yml up -d
 ---
 
 ---
+
 
 
 

@@ -15,7 +15,7 @@
    * [Exception Flow Diagram](#exception-flow-diagram)
    * [ERD Diagram](#erd-diagram)
 * [Setup Guide](#setup-guide)
-* [Cost Analysis](#cost-analysis)
+
 
 ---
 ## Purpose
@@ -934,13 +934,3 @@ docker compose -f docker-compose-non-dev.yml up -d
 - [ ] Superset connects to database and displays data
 
 ---
-## Cost Analysis
----
-
-
-
-
-
-
-
-

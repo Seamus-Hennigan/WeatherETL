@@ -7,19 +7,16 @@
 * [Features](#features)
 * [Project Metrics](#project-metrics)
 * [Technology Stack & Rationale](#technology-stack-&-rational)
-* [Complete List of Tools & Services](#tools)
+* [Complete List of Tools & Services](#complete-list-of-tools-&-services)
 * [Technical Diagrams](#technical-diagrams)
    * [Sequence Diagram](#sequence-diagram)
-   * [AWS Architecture Diagram](#architecture)
-   * [Component Diagram](#component)
-   * [Exception Flow Diagram](#exception)
-   * [ERD Diagram](#erd)
-* [Database Schema](#schema)
-* [Implementation Challenges & Solutions](#challenges)
-* [Cost Analysis](#cost)
-* [Setup Guide](#setup)
-* [Troubleshooting](#troubleshooting)
-* [Contact](#contact)
+   * [AWS Architecture Diagram](#AWS-Architecture-Diagram)
+   * [Component Diagram](#component-diagram)
+   * [Exception Flow Diagram](#exception-flow-diagram)
+   * [ERD Diagram](#erd-diagram)
+* [Setup Guide](#setup-guide)
+* [Cost Analysis](#cost-analysis)
+
 ---
 ## Purpose
 This project demonstrates the design and implementation of a **production-grade, cloud-based ETL (Extract, Transform, Load) pipeline** for automated weather data collection and visualization. Built entirely on AWS infrastructure, it showcases modern data engineering practices including serverless computing, error handling, cost optimization, and interactive data visualization.
@@ -334,96 +331,7 @@ erDiagram
     }
 ```
 ---
-## Database Schema
 
-### Create the Database
-```sql
-CREATE DATABASE weatherETL;
-```
-### CITIES
-```sql
-
-CREATE TABLE CITIES (
-    city_id INT AUTO_INCREMENT PRIMARY KEY,
-    city_name VARCHAR(255) NOT NULL,
-    country_code CHAR(2) NOT NULL,
-    latitude FLOAT NOT NULL,
-    longitude FLOAT NOT NULL,
-    timezone VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-```
-### WEATHER_OBSERVATIONS
-```SQL
-
-CREATE TABLE WEATHER_OBSERVATIONS (
-    observation_id INT AUTO_INCREMENT PRIMARY KEY,
-    city_id INT NOT NULL,
-    observation_timestamp TIMESTAMP NOT NULL,
-    fetch_timestamp TIMESTAMP NOT NULL,
-    temperature_celsius FLOAT,
-    temperature_fahrenheit FLOAT,
-    feels_like_celsius FLOAT,
-    feels_like_fahrenheit FLOAT,
-    humidity INT,
-    pressure INT,
-    weather_main VARCHAR(100),
-    weather_description VARCHAR(255),
-    
-    CONSTRAINT fk_weather_city
-        FOREIGN KEY (city_id) REFERENCES CITIES(city_id)
-        ON DELETE CASCADE
-);
-```
-### WEATHER_DETAILS
-```sql
-CREATE TABLE WEATHER_DETAILS (
-    detail_id INT AUTO_INCREMENT PRIMARY KEY,
-    observation_id INT NOT NULL,
-    temp_min_celsius FLOAT,
-    temp_max_celsius FLOAT,
-    sea_level_pressure INT,
-    ground_level_pressure INT,
-    wind_speed FLOAT,
-    wind_direction INT,
-    wind_gust FLOAT,
-    cloudiness INT,
-    visibility INT,
-    weather_icon VARCHAR(10),
-    sunrise TIMESTAMP NULL,
-    sunset TIMESTAMP NULL,
-
-    CONSTRAINT fk_details_observation
-        FOREIGN KEY (observation_id) REFERENCES WEATHER_OBSERVATIONS(observation_id)
-        ON DELETE CASCADE
-);
-```
-## DATA_QUALITY_LOG
-```sql
-
-CREATE TABLE DATA_QUALITY_LOG (
-    log_id INT AUTO_INCREMENT PRIMARY KEY,
-    city_id INT NOT NULL,
-    observation_id INT NOT NULL,
-    fetch_timestamp TIMESTAMP NOT NULL,
-    api_response_time_ms INT,
-    data_completeness_score FLOAT,
-    has_nulls BOOLEAN,
-    validation_passed BOOLEAN,
-    error_message VARCHAR(500),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_log_city
-        FOREIGN KEY (city_id) REFERENCES CITIES(city_id)
-        ON DELETE SET NULL,
-
-    CONSTRAINT fk_log_observation
-        FOREIGN KEY (observation_id) REFERENCES WEATHER_OBSERVATIONS(observation_id)
-        ON DELETE SET NULL
-);
-```
----
 ## Setup Guide
 
 > **⚠️ Important Disclaimers:**
@@ -1024,8 +932,9 @@ docker compose -f docker-compose-non-dev.yml up -d
 - [ ] Superset connects to database and displays data
 
 ---
-
+## Cost Analysis
 ---
+
 
 
 

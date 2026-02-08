@@ -597,6 +597,56 @@ CREATE TABLE data_quality_log (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Add all of the Views needed
+CREATE VIEW weather_with_city AS
+SELECT 
+    wd.detail_id,
+    wd.wind_speed,
+    wo.city_id,
+    c.city_name,
+    wd.observation_id,
+    wo.observation_timestamp
+FROM WEATHER_DETAILS wd
+JOIN WEATHER_OBSERVATIONS wo ON wd.observation_id = wo.observation_id
+JOIN CITIES c ON wo.city_id = c.city_id;
+
+CRATE VIEW vw_weather AS
+SELECT
+    c.city_id,
+    c.city_name,
+    c.country_code,
+    c.latitude,
+    c.longitude,
+
+    wo.observation_id,
+    wo.observation_timestamp,
+    wo.fetch_timestamp,
+    wo.temperature_celsius,
+    wo.feels_like_celsius,
+    wo.humidity,
+    wo.pressure,
+    wo.weather_main,
+    wo.weather_description,
+
+    wd.wind_speed,
+    wd.wind_gust,
+    wd.wind_direction,
+    wd.cloudiness,
+    wd.visibility,
+    wd.temp_min_celsius,
+    wd.temp_max_celsius,
+
+    dq.data_completeness_score,
+    dq.api_response_time_ms,
+    dq.has_nulls,
+    dq.validation_passed
+
+FROM weather_observations wo
+JOIN weather_details wd ON wo.observation_id = wd.observation_id
+JOIN cities c ON wo.city_id = c.city_id
+LEFT JOIN data_quality_log dq ON dq.observation_id = wo.observation_id;
+
+
 -- Exit
 \q
 ```
@@ -934,3 +984,4 @@ docker compose -f docker-compose-non-dev.yml up -d
 - [ ] Superset connects to database and displays data
 
 ---
+
